@@ -154,29 +154,63 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
   
    res.render("listings/new.ejs");
 });
-app.post("/listing",isLoggedIn,upload.single("listing[image]"),wrapAsync(async(req,res,next)=>{
- let response=await geocodingClient.forwardGeocode({
-    query:req.body.listing.location,
-    limit:1
- })
- .send();
- 
- 
- 
-    let url=req.file.path;
- let filename=req.file.filename;
- 
-const newlisting=new Listing(req.body.listing);
-newlisting.owner=req.user._id;
-newlisting.image={url,filename};
-newlisting.geometry=response.body.features[0].geometry;
-await newlisting.save();
-req.flash("success","Your property is successfully registered on the Wanderlust");
-res.redirect("/listing");
-    })
+app.post("/listing", isLoggedIn, (req, res, next) => {
+  upload.single("listing[image]")(req, res, function(err) {
+    if (err) {
+      console.error('File upload error:', err);
+      req.flash("error", "File upload failed");
+      return res.redirect("/listing/new");
+    }
+    next();
+  });
+}, wrapAsync(async(req, res, next) => {
+  try {
+    // Verify required fields
+    if (!req.body.listing?.location) {
+      req.flash("error", "Location is required");
+      return res.redirect("/listing/new");
+    }
 
-);
-         
+    // Geocoding
+    let response;
+    try {
+      response = await geocodingClient.forwardGeocode({
+        query: req.body.listing.location,
+        limit: 1
+      }).send();
+      
+      if (!response.body.features || response.body.features.length === 0) {
+        throw new Error('No location found');
+      }
+    } catch (err) {
+      console.error('Geocoding error:', err);
+      req.flash("error", "Invalid location");
+      return res.redirect("/listing/new");
+    }
+
+    // File validation
+    if (!req.file) {
+      req.flash("error", "Image is required");
+      return res.redirect("/listing/new");
+    }
+
+    const newlisting = new Listing(req.body.listing);
+    newlisting.owner = req.user._id;
+    newlisting.image = {
+      url: req.file.path,
+      filename: req.file.filename
+    };
+    newlisting.geometry = response.body.features[0].geometry;
+    
+    await newlisting.save();
+    req.flash("success", "Your property is successfully registered");
+    res.redirect("/listing");
+  } catch (err) {
+    console.error('Route error:', err);
+    req.flash("error", "Failed to create listing");
+    res.redirect("/listing/new");
+  }
+}));
 
 
 
