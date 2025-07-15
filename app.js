@@ -104,7 +104,7 @@ el.message
 
     
 }
-app.get("/", (req, res) => {
+app.get("/", wrapAsync(async (req, res) => {
      const { category, search } = req.query;
     let query = {};
 
@@ -123,7 +123,7 @@ app.get("/", (req, res) => {
 
 const alllisting=await Listing.find(query);
 res.render("listings/index.ejs",{alllisting});
-});
+}));
 app.get("/listing", wrapAsync(async(req, res) => {
      const { category, search } = req.query;
     let query = {};
