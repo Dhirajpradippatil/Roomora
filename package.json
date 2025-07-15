@@ -6,8 +6,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-     "start": "node app.js",  // or your main entry file
-    "build": "npm install",   // or "npm install --production" if you want only production deps
+     "start": "node app.js", 
+    "build": "npm install",   
     "dev": "nodemon app.js"
   },
   "keywords": [],
