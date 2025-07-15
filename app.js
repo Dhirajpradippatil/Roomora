@@ -1,3 +1,13 @@
+require("dotenv").config();
+
+console.log("=======================================");
+console.log("🚀 ENVIRONMENT CHECK:");
+console.log("🚀 MAP_TOKEN:", process.env.MAP_TOKEN);
+console.log("🚀 ATLASDB_URL:", process.env.ATLASDB_URL);
+console.log("🚀 CLOUD_NAME:", process.env.CLOUD_NAME);
+console.log("🚀 CLOUD_APIKEY:", process.env.CLOUD_APIKEY);
+console.log("🚀 CLOUD_APISECRET:", process.env.CLOUD_APISECRET);
+console.log("=======================================");
 if(process.env.NODE_ENV !="production"){
 require('dotenv').config();
 }
