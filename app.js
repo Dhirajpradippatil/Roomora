@@ -156,8 +156,9 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
 app.post("/listing", isLoggedIn, upload.single("listing[image]"), wrapAsync(async (req, res, next) => {
     console.log("=====================================");
     console.log("🚀 POST /listing STARTED");
-    console.log("🚀 req.body:", JSON.stringify(req.body, null, 2));
-    console.log("🚀 req.file:", req.file);
+   console.log("🚀 req.body:", JSON.stringify(req.body, null, 2));
+console.log("🚀 req.file:", JSON.stringify(req.file, null, 2));
+
 
     // Check if file actually uploaded
     if (!req.file) {
