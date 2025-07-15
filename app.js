@@ -153,49 +153,50 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
   
    res.render("listings/new.ejs");
 });
-app.post("/listing", isLoggedIn, upload.single("listing[image]"), wrapAsync(async (req, res, next) => {
+app.post("/listing", isLoggedIn, upload.single("listing[image]"), async (req, res) => {
     console.log("=====================================");
     console.log("🚀 POST /listing STARTED");
-   console.log("🚀 req.body:", JSON.stringify(req.body, null, 2));
-console.log("🚀 req.file:", JSON.stringify(req.file, null, 2));
 
-
-    // Check if file actually uploaded
-    if (!req.file) {
-        console.error("❌ FILE NOT UPLOADED. Likely multer or cloudinary config issue.");
-        return res.status(400).send("File upload failed");
-    }
-
-    // Geocoding
-    let geoData;
     try {
-        geoData = await geocodingClient.forwardGeocode({
-            query: req.body.listing.location,
-            limit: 1
-        }).send();
-        console.log("🚀 Geocoding success:", geoData.body.features[0].geometry);
-    } catch (err) {
-        console.error("❌ Geocoding failed:", err.message);
-        return res.status(500).send("Geocoding failed");
-    }
+        console.log("🚀 req.body:", JSON.stringify(req.body, null, 2));
+        console.log("🚀 req.file:", JSON.stringify(req.file, null, 2));
 
-    // Create new listing
-    try {
-        let newlisting = new Listing(req.body.listing);
-        newlisting.owner = req.user._id;
-        newlisting.image = { url: req.file.path, filename: req.file.filename };
-        newlisting.geometry = geoData.body.features[0].geometry;
+        // Check multer uploaded
+        if (!req.file) {
+            console.error("❌ No file uploaded. Check your form field name & multer config.");
+            return res.status(400).send("No file uploaded");
+        }
 
-        await newlisting.save();
-        console.log("✅ Listing saved to DB:", newlisting);
+        // Geocoding
+        let geoData;
+        try {
+            geoData = await geocodingClient.forwardGeocode({
+                query: req.body.listing.location,
+                limit: 1
+            }).send();
+            console.log("🚀 Geocode success:", JSON.stringify(geoData.body.features[0].geometry, null, 2));
+        } catch (err) {
+            console.error("❌ Geocoding failed:", err);
+            return res.status(500).send("Geocoding failed");
+        }
+
+        // Save listing
+        const newListing = new Listing(req.body.listing);
+        newListing.owner = req.user._id;
+        newListing.image = { url: req.file.path, filename: req.file.filename };
+        newListing.geometry = geoData.body.features[0].geometry;
+
+        await newListing.save();
+        console.log("✅ Listing saved:", JSON.stringify(newListing, null, 2));
 
         req.flash("success", "Your property is successfully registered on Roomora");
         res.redirect("/listing");
     } catch (err) {
-        console.error("❌ Saving to DB failed:", err.message);
-        return res.status(500).send("Database save failed");
+        console.error("❌ Unexpected error:", err);
+        res.status(500).send("Internal Server Error: " + err.message);
     }
-}));
+});
+
 
 
 
