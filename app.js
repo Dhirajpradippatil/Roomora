@@ -104,7 +104,7 @@ el.message
 
     
 }
-app.get("/raj", (req, res) => {
+app.get("/", (req, res) => {
     res.send("🚀 Hello from Roomora server!");
 });
 app.get("/listing", wrapAsync(async(req, res) => {
