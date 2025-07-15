@@ -49,6 +49,7 @@ async function main() {
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.use(express.urlencoded({extended:true}));
+app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"/public")));
@@ -153,9 +154,28 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
   
    res.render("listings/new.ejs");
 });
-app.post("/listing",isLoggedIn,(req,res)=>{
-res.send(req.body.listing);
-});
+app.post("/listing",isLoggedIn,upload.single("listing[image]"),wrapAsync(async(req,res,next)=>{
+ let response=await geocodingClient.forwardGeocode({
+    query:req.body.listing.location,
+    limit:1
+ })
+ .send();
+ 
+ 
+ 
+    let url=req.file.path;
+ let filename=req.file.filename;
+ 
+const newlisting=new Listing(req.body.listing);
+newlisting.owner=req.user._id;
+newlisting.image={url,filename};
+newlisting.geometry=response.body.features[0].geometry;
+await newlisting.save();
+req.flash("success","Your property is successfully registered on the Wanderlust");
+res.redirect("/listing");
+    })
+
+);
          
 
 
