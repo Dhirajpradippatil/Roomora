@@ -53,9 +53,7 @@ app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"/public")));
-app.use((err, req, res, next) => {
-    res.status(500).render("listings/err.ejs", { err });
-});
+
 const store=MongoStore.create({
     mongoUrl:DBURL,
     crypto:{
