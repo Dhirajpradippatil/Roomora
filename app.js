@@ -155,7 +155,7 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
 });
 app.post("/listing",isLoggedIn,(req,res)=>{
 res.send(req.body.listing);
-}
+});
          
 
 
