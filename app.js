@@ -153,28 +153,49 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
   
    res.render("listings/new.ejs");
 });
-app.post("/listing",isLoggedIn,upload.single("listing[image]"),wrapAsync(async(req,res,next)=>{
- let response=await geocodingClient.forwardGeocode({
-    query:req.body.listing.location,
-    limit:1
- })
- .send();
- 
- 
- 
-    let url=req.file.path;
- let filename=req.file.filename;
- 
-const newlisting=new Listing(req.body.listing);
-newlisting.owner=req.user._id;
-newlisting.image={url,filename};
-newlisting.geometry=response.body.features[0].geometry;
-await newlisting.save();
-req.flash("success","Your property is successfully registered on the Wanderlust");
-res.redirect("/listing");
-    })
+app.post("/listing", isLoggedIn, upload.single("listing[image]"), wrapAsync(async (req, res, next) => {
+    console.log("=====================================");
+    console.log("🚀 POST /listing STARTED");
+    console.log("🚀 req.body:", JSON.stringify(req.body, null, 2));
+    console.log("🚀 req.file:", req.file);
 
-);
+    // Check if file actually uploaded
+    if (!req.file) {
+        console.error("❌ FILE NOT UPLOADED. Likely multer or cloudinary config issue.");
+        return res.status(400).send("File upload failed");
+    }
+
+    // Geocoding
+    let geoData;
+    try {
+        geoData = await geocodingClient.forwardGeocode({
+            query: req.body.listing.location,
+            limit: 1
+        }).send();
+        console.log("🚀 Geocoding success:", geoData.body.features[0].geometry);
+    } catch (err) {
+        console.error("❌ Geocoding failed:", err.message);
+        return res.status(500).send("Geocoding failed");
+    }
+
+    // Create new listing
+    try {
+        let newlisting = new Listing(req.body.listing);
+        newlisting.owner = req.user._id;
+        newlisting.image = { url: req.file.path, filename: req.file.filename };
+        newlisting.geometry = geoData.body.features[0].geometry;
+
+        await newlisting.save();
+        console.log("✅ Listing saved to DB:", newlisting);
+
+        req.flash("success", "Your property is successfully registered on Roomora");
+        res.redirect("/listing");
+    } catch (err) {
+        console.error("❌ Saving to DB failed:", err.message);
+        return res.status(500).send("Database save failed");
+    }
+}));
+
 
 
 // app.get("/testlisting", async (req, res) => {
