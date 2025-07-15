@@ -113,6 +113,27 @@ el.message
     
 }
 
+app.get(" ", wrapAsync(async(req, res) => {
+     const { category, search } = req.query;
+    let query = {};
+
+    if (category && category !== "Trending") {
+        query.category = category;
+    }
+
+    if (search) {
+        query.$or = [
+            { title: { $regex: search, $options: "i" } },
+            { location: { $regex: search, $options: "i" } },
+            { country: { $regex: search, $options: "i" } }
+        ];
+    }
+   
+
+const alllisting=await Listing.find(query);
+res.render("listings/index.ejs",{alllisting});
+}))
+
 app.get("/listing", wrapAsync(async(req, res) => {
      const { category, search } = req.query;
     let query = {};
