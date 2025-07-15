@@ -147,11 +147,13 @@ app.post("/listing",
     upload.single("listing[image]"),
     wrapAsync(async (req, res, next) => {
 
-        console.log("🚀 req.body:", req.body);
+        console.log("🚀 req.body.listing:", req.body.listing);
         console.log("🚀 req.file:", req.file);
         console.log("🚀 req.user:", req.user);
 
         const { listing } = req.body;
+
+        // Check if listing and location exist
         if (!listing || !listing.location) {
             req.flash("error", "Location is required.");
             return res.redirect("/listing/new");
@@ -181,6 +183,7 @@ app.post("/listing",
         res.redirect("/listing");
     })
 );
+
 
 // app.get("/testlisting", async (req, res) => {
 //     let sampleListing = new Listing({
