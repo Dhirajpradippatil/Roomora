@@ -156,6 +156,8 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
 app.post("/listing", isLoggedIn, upload.single("listing[image]"), async (req, res) => {
     console.log("=====================================");
     console.log("🚀 POST /listing STARTED");
+    let raj=req.body.listing;
+    console.log(raj);
 
     try {
         console.log("🚀 req.body:", JSON.stringify(req.body, null, 2));
