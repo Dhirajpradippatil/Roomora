@@ -27,8 +27,9 @@ const multer= require("multer");
 const { storage } = require("./cloudConfig.js");
 const upload = multer({storage});
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({accessToken:mapToken})
+const mapToken = process.env.MAPBOX_TOKEN;   // 🔥 use the correct env var name
+const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+
 const DBURL= process.env.ATLASDB_URL;
 
 async function main() {
