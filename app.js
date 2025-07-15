@@ -150,10 +150,11 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
   
    res.render("listings/new.ejs");
 });
-app.post("/listing", isLoggedIn, (req, res, next) => {
-    const multer= require("multer");
+  const multer= require("multer");
 const { storage } = require("./cloudConfig.js");
 const upload = multer({storage});
+app.post("/listing", isLoggedIn, (req, res, next) => {
+  
   upload.single("listing[image]")(req, res, function(err) {
     if (err) {
       console.error('File upload error:', err);
