@@ -161,27 +161,44 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
   
    res.render("listings/new.ejs");
 });
-app.post("/listing",isLoggedIn,upload.single("listing[image]"),wrapAsync(async(req,res,next)=>{
- let response=await geocodingClient.forwardGeocode({
-    query:req.body.listing.location,
-    limit:1
- })
- .send();
- 
- 
- 
-    let url=req.file.path;
- let filename=req.file.filename;
- 
-const newlisting=new Listing(req.body.listing);
-newlisting.owner=req.user._id;
-newlisting.image={url,filename};
-newlisting.geometry=response.body.features[0].geometry;
-await newlisting.save();
-req.flash("success","Your property is successfully registered on the Wanderlust");
-res.redirect("/listing");
-    })
+app.post("/listing",
+    isLoggedIn,
+    upload.single("listing[image]"),
+    wrapAsync(async (req, res, next) => {
 
+        console.log("🚀 req.body:", req.body);
+        console.log("🚀 req.file:", req.file);
+        console.log("🚀 req.user:", req.user);
+
+        const { listing } = req.body;
+        if (!listing || !listing.location) {
+            req.flash("error", "Location is required.");
+            return res.redirect("/listing/new");
+        }
+
+        let response = await geocodingClient.forwardGeocode({
+            query: listing.location,
+            limit: 1
+        }).send();
+
+        if (!response.body.features.length) {
+            req.flash("error", "Invalid location. Try again.");
+            return res.redirect("/listing/new");
+        }
+
+        const geometry = response.body.features[0].geometry;
+        const url = req.file?.path || "default.jpg";
+        const filename = req.file?.filename || "default";
+
+        const newlisting = new Listing(listing);
+        newlisting.owner = req.user._id;
+        newlisting.image = { url, filename };
+        newlisting.geometry = geometry;
+
+        await newlisting.save();
+        req.flash("success", "Your property is successfully registered on the Wanderlust");
+        res.redirect("/listing");
+    })
 );
 
 // app.get("/testlisting", async (req, res) => {
