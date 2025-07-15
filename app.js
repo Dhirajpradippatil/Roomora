@@ -2,11 +2,7 @@ if(process.env.NODE_ENV !="production"){
 require('dotenv').config();
 }
 
-console.log("🚀 MAP_TOKEN:", process.env.MAP_TOKEN);
-console.log("🚀 ATLASDB_URL:", process.env.DATABASE_URL);
-console.log("🚀 CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
-console.log("🚀CLOUD_APIKEY:", process.env.CLOUDINARY_API_KEY);
-console.log("🚀 CLOUD_APISECRET:", process.env.CLOUDINARY_API_SECRET);
+
 
 const express = require("express");
 const app = express();
