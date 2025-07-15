@@ -161,26 +161,27 @@ app.post("/listing", isLoggedIn, upload.single("listing[image]"), async (req, re
         console.log("🚀 req.body:", JSON.stringify(req.body, null, 2));
         console.log("🚀 req.file:", JSON.stringify(req.file, null, 2));
 
-        // Check multer uploaded
         if (!req.file) {
-            console.error("❌ No file uploaded. Check your form field name & multer config.");
-            return res.status(400).send("No file uploaded");
+            console.error("❌ No file uploaded. Check form field name & multer setup.");
+            return res.status(400).send("No file uploaded. Check multer config.");
         }
 
-        // Geocoding
         let geoData;
         try {
             geoData = await geocodingClient.forwardGeocode({
                 query: req.body.listing.location,
                 limit: 1
             }).send();
+            if (!geoData.body.features.length) {
+                console.error("❌ Geocoding returned empty. Location might be invalid.");
+                return res.status(400).send("Invalid location for geocoding.");
+            }
             console.log("🚀 Geocode success:", JSON.stringify(geoData.body.features[0].geometry, null, 2));
         } catch (err) {
             console.error("❌ Geocoding failed:", err);
-            return res.status(500).send("Geocoding failed");
+            return res.status(500).send("Geocoding failed: " + err.message);
         }
 
-        // Save listing
         const newListing = new Listing(req.body.listing);
         newListing.owner = req.user._id;
         newListing.image = { url: req.file.path, filename: req.file.filename };
@@ -192,10 +193,11 @@ app.post("/listing", isLoggedIn, upload.single("listing[image]"), async (req, re
         req.flash("success", "Your property is successfully registered on Roomora");
         res.redirect("/listing");
     } catch (err) {
-        console.error("❌ Unexpected error:", err);
+        console.error("❌ Unexpected server error:", err);
         res.status(500).send("Internal Server Error: " + err.message);
     }
 });
+
 
 
 
