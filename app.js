@@ -153,7 +153,10 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
   
    res.render("listings/new.ejs");
 });
-
+app.post("/listing",isLoggedIn,(req,res)=>{
+res.send(req.body.listing);
+}
+         
 
 
 
