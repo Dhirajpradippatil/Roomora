@@ -1,0 +1,50 @@
+<% layout('/layouts/boilerplate') %>
+
+<div class="container mt-4">
+    <h1 class="text-center">Welcome Admin <%= adminName %></h1>
+
+    <div class="row text-center mt-4 g-3">
+        <div class="col-12 col-md-4">
+            <div class="card p-3 shadow-sm h-100">
+                         <h3>Total Users</h3>
+                <p class="display-6"><%= totalUsers %></p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+ <div class="card p-3 shadow-sm h-100">
+                <h3>Total Listings</h3>
+                   <p class="display-6"><%= totalListings %></p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card p-3 shadow-sm h-100">
+                <h3>Total Bookings</h3>
+   <p class="display-6"><%= totalBookings %></p>
+            </div>
+    </div>
+    </div>
+
+    <h4 class="mt-5">Recent Bookings</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                         <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Listing</th>
+          <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% recentBookings.forEach(booking => { %>
+                    <tr>
+               <td><%= booking.name %></td>
+                   <td><%= booking.phone %></td>
+                        <td><%= booking.listing ? booking.listing.title : "Deleted Listing" %></td>
+                        <td><%= booking.createdAt.toDateString() %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
