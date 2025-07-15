@@ -34,9 +34,7 @@ const LocalStrategy = require("passport-local")
 const User = require("./models/user.js");
 let {isLoggedIn} = require("./middleware.js");
 let { saveRediretUrl, isOwner, isAuthor, isAdmin } = require("./middleware.js");
-const multer= require("multer");
-const { storage } = require("./cloudConfig.js");
-const upload = multer({storage});
+
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken = process.env.MAP_TOKEN;   // 🔥 use the correct env var name
 const geocodingClient = mbxGeocoding({ accessToken: mapToken });
@@ -153,6 +151,9 @@ app.get("/listings/new",isLoggedIn, (req, res) => {
    res.render("listings/new.ejs");
 });
 app.post("/listing", isLoggedIn, (req, res, next) => {
+    const multer= require("multer");
+const { storage } = require("./cloudConfig.js");
+const upload = multer({storage});
   upload.single("listing[image]")(req, res, function(err) {
     if (err) {
       console.error('File upload error:', err);
