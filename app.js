@@ -113,8 +113,8 @@ el.message
     
 }
 
-app.get(" ", async(req, res) => {
-     const { category, search } = req.query;
+app.get("", wrapAsync(async(req, res) => {
+    const { category, search } = req.query;
     let query = {};
 
     if (category && category !== "Trending") {
@@ -128,11 +128,28 @@ app.get(" ", async(req, res) => {
             { country: { $regex: search, $options: "i" } }
         ];
     }
-   
 
-const alllisting=await Listing.find(query);
-res.render("listings/index.ejs",{alllisting});
-})
+    // Pagination implementation
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const allListings = await Listing.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+
+    const totalListings = await Listing.countDocuments(query);
+    const totalPages = Math.ceil(totalListings / limit);
+
+    res.render("listings/index.ejs", {
+        allListings,
+        currentPage: page,
+        totalPages,
+        category,
+        searchQuery: search
+    });
+}));
 
 app.get("/listing", wrapAsync(async(req, res) => {
      const { category, search } = req.query;
