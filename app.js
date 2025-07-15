@@ -2,6 +2,11 @@ if(process.env.NODE_ENV !="production"){
 require('dotenv').config();
 }
 
+console.log("🚀 MAP_TOKEN:", process.env.MAP_TOKEN);
+console.log("🚀 DATABASE_URL:", process.env.DATABASE_URL);
+console.log("🚀 CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
+console.log("🚀 CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY);
+console.log("🚀 CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET);
 
 const express = require("express");
 const app = express();
