@@ -104,7 +104,9 @@ el.message
 
     
 }
-
+app.get("/raj", (req, res) => {
+    res.send("🚀 Hello from Roomora server!");
+});
 app.get("/listing", wrapAsync(async(req, res) => {
      const { category, search } = req.query;
     let query = {};
