@@ -4,71 +4,98 @@
     color: #fff;
     border-radius: 25px;
     padding: 0 1rem;
-    display: inline-flex;    /* 👈 key: makes icon+text inline */
-    align-items: center;     /* center vertically */
-    gap: 0.5rem;             /* space between icon & text */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     border: none;
-}
+  }
 
-.btn-search:hover {
+  .btn-search:hover {
     background-color: #fe424d;
     color: #fff;
-}
+  }
 
-.search-inp {
+  .search-inp {
     border-radius: 25px;
     padding: 0.5rem 3rem;
     font-size: 1rem;
-}
+  }
 
-/* The icon inside button no longer needs margin, flex does it */
-.btn-search i {
-    display: inline-block; /* or flex */
-}
+  .btn-search i {
+    display: inline-block;
+  }
 
+  /* Responsive tweaks */
+  @media (max-width: 768px) {
+    .navbar-nav {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .search-inp {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-search {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .d-flex[role="search"] {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .nav-link, .btn {
+      width: 100%;
+      text-align: left;
+    }
+  }
 </style>
+
 <nav class="navbar navbar-expand-lg bg-body-light border-bottom sticky-top">
   <div class="container-fluid">
     <a class="navbar-brand" href="/listing"><i class="fa-solid fa-compass"></i></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link " aria-current="page" href="/listing">Explore</a>
-       
-        
-        </div>
-         <div class="navbar-nav">
-      <% if (currUser && currUser.isAdmin) { %>
-<li class="nav-item">
-  <a class="btn btn-outline-light ms-2" href="/dashboard">
-    <i class="fa-solid fa-gauge-high"></i> Admin Panel
-  </a>
-</li>
-<% } %>
-       
-        
-        </div>
-<div class="navbar-nav ms-auto">
- <form class="d-flex" role="search" action="/listing" method="GET">
-  <input class="form-control me-2 search-inp" type="search" name="search" placeholder="Search Destinations" aria-label="Search">
-  <button class="btn btn-search" type="submit">
-    <i class="fa-solid fa-magnifying-glass"></i> Search
-  </button>
-</form>
+      <div class="navbar-nav w-100 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center">
 
-</div>
+        <!-- Left Section -->
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center">
+          <a class="nav-link" href="/listing">Explore</a>
+          <% if (currUser && currUser.isAdmin) { %>
+            <a class="btn btn-outline-light ms-lg-2 mt-2 mt-lg-0" href="/dashboard">
+              <i class="fa-solid fa-gauge-high"></i> Admin Panel
+            </a>
+          <% } %>
+        </div>
 
-        <div class="navbar-nav ms-auto">
-         <a  class="nav-link" href="/listings/new">Roomora your home</a>
-          <% if(!currUser){%>
-        <a class="nav-link sign" href="/signup"><b>Sign up</b></a>
-        <a class="nav-link log" href="/login"><b>Log in</b></a>
-        <%}%>
-        <% if(currUser){%>
-        <a class="nav-link sign" href="/logout"><b>Log out</b></a>
-        <%}%>
+        <!-- Search Form -->
+        <form class="d-flex mt-2 mt-lg-0" role="search" action="/listing" method="GET">
+          <input class="form-control me-2 search-inp" type="search" name="search" placeholder="Search Destinations" aria-label="Search">
+          <button class="btn btn-search" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i> Search
+          </button>
+        </form>
+
+        <!-- Right Section -->
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center mt-2 mt-lg-0">
+          <a class="nav-link" href="/listings/new">Roomora your home</a>
+          <% if (!currUser) { %>
+            <a class="nav-link sign" href="/signup"><b>Sign up</b></a>
+            <a class="nav-link log" href="/login"><b>Log in</b></a>
+          <% } else { %>
+            <a class="nav-link sign" href="/logout"><b>Log out</b></a>
+          <% } %>
+        </div>
+
       </div>
     </div>
   </div>
